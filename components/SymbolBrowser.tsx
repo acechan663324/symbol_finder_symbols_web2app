@@ -1,6 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import { SYMBOL_CATEGORIES } from '../constants';
 
+
+declare global {
+    interface Window {
+        Android: {
+           isVip?: () => boolean;
+        };
+    }
+}
+
 interface SymbolBrowserProps {
     onCopy: (text: string) => void;
     searchQuery: string;
@@ -30,7 +39,12 @@ const SymbolBrowser: React.FC<SymbolBrowserProps> = ({ onCopy, searchQuery }) =>
             {symbols.map((symbol, index) => (
                 <button
                     key={`${keyPrefix}-${index}`}
-                    onClick={() => onCopy(symbol)}
+                    onClick={() => {
+                        ///调用Android端的提供的接口，先判断是否已经得到vip权限
+                        if (window.Android.isVip()) {
+                            onCopy(symbol);
+                        } 
+                    }}
                     className="flex items-center justify-center bg-gray-800 rounded-lg h-14 text-2xl transition-transform duration-150 ease-in-out hover:bg-indigo-500 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                     aria-label={`Copy symbol ${symbol}`}
                 >
